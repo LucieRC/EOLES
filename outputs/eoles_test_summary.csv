@@ -1,0 +1,3 @@
+COST,LCOH,LCOM,LCOE_SYS1,LCOE_SYS2,STR_LOSS,,LC,
+in billion euro,average cost of hydrogen (euros/kg),average cost of methane (euros/kg),electricity cost per MWh produced (euros/MWh),electricity cost per MWh consumed (euros/MWh),yearly storage related loss in % of power production,yearly storage related loss in TWh,load curtailment in % of power production,load curtailment in TWh
+39.1854,1.4,22.73,49.5,67.09,4.24,33.53,2.29,18.12

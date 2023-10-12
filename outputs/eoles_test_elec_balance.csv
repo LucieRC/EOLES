@@ -1,0 +1,16 @@
+Supply in TWh-e ->
+offshore_f,offshore_g,onshore_V90,onshore_V110,pv_g_EW,pv_g_S,pv_c,river,lake,small_hydro,ocgt,ccgt,nuc,h2_ccgt,phs,battery1,battery4,waste,geothermal_coge,biomass_coge
+floating offshore wind,ground-based offshore wind,"onshore wind, technology V90","onshore wind, technology V110","pv grounded, oriented East-West","pv grounded, oriented South",pv commercial,run-of-river hydro,lake and reservoirs,minor hydro tecs,open cycle gas-turbine,combined cycle gas turbine,nuclear,combined cycle gas turbine using hydrogen,pumped hydroelectric energy storage,1 hour battery,4 hours battery,cogeneration from waste disposal,cogeneration from geothermal,cogeneration from solid biomass
+1.73,88.3,0.0,457.7,0.0,128.14,0.0,41.99,30.94,0.99,4.43,0.0,21.94,10.93,14.12,0.2,0.0,0.79,0.95,2.8
+
+Use in TWh-e ->
+electrolysis,methanation,phs,battery1,battery4,elec demand,load curtailment
+123.3,66.94,17.08,0.23,0.0,580.0,18.12
+
+Hours in use ->
+electrolysis,methanation,phs,battery1,battery4
+5337,5809,2788,494,0
+
+Capacity Factor in % ->
+lake,ocgt,ccgt,nuc,h2_ccgt,electrolysis,battery1,battery4,phs
+26.42,1.24,-,78.25,12.58,39.95,4.66,-,20.15

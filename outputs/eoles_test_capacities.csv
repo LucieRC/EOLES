@@ -1,0 +1,9 @@
+Capacity in GW ->
+offshore_f,offshore_g,onshore_V90,onshore_V110,pv_g_EW,pv_g_S,pv_c,river,lake,small_hydro,methanization,ocgt,ccgt,nuc,h2_ccgt,phs,battery1,battery4,methanation,pyrogazification,electrolysis,hydrogen,methane,waste,geothermal_coge,biomass_coge
+floating offshore wind,ground-based offshore wind,"onshore wind, technology V90","onshore wind, technology V110","pv grounded, oriented East-West","pv grounded, oriented South",pv commercial,run-of-river hydro,lake and reservoirs,minor hydro tecs,biogas from methanization,open cycle gas-turbine,combined cycle gas turbine,nuclear,combined cycle gas turbine using hydrogen,pumped hydroelectric energy storage,1 hour battery,4 hours battery,"methane by methanation, into storage","methane by pyrogazification, into storage",electrolysis,hydrogen storage in salt caverns,methane storage,cogeneration from waste disposal,cogeneration from geothermal,cogeneration from solid biomass
+0.39,20.0,0.0,121.0,0.0,94.0,0.0,9.0,13.37,0.25,14.11,40.76,0.0,3.2,9.92,8.0,0.48,0.0,9.66,0.0,28.19,18.39,117.23,0.52,0.14,0.8
+
+Energy volume of storage technology in GWh ->
+phs,battery1,battery4,hydrogen,methane
+pumped hydroelectric energy storage,1 hour battery,4 hours battery,hydrogen storage in salt caverns,methane storage
+135,0.48,0.0,3000.0,13457.97
