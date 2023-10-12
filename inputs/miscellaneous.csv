@@ -1,0 +1,10 @@
+load_uncertainty,0.01
+delta,0.1
+H2_demand,76500
+CH4_demand,165700
+hourly_ramping_nuc,0.3
+len_delay,24
+percentage_co2_from_methanization,0.43
+discount_rate,0.045
+pci_h2,33.4
+pci_ch4,13.9
