@@ -1,0 +1,8 @@
+.DS_Store
+*.png
+*.yml
+*.json
+*.pyc
+__pycache__
+gurobi.log
+*.icloud

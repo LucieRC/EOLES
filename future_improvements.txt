@@ -1,0 +1,12 @@
+Here are a few improvements leads for EOLES :
+
+- Performance : I believe there are a few easy ways to improve performances, especially regarding data representation and memory management.
+A starting point : https://stackoverflow.com/questions/14452145/how-to-measure-time-taken-between-lines-of-code-in-python
+
+- Adding the possibility for H2 injection in the biogas network ('methane' tec)
+
+- Implementing a 24h floating mean rather than uniform data each day for hydro related storage
+
+- There might be some errors here :
+    - verify that eta of production tecs are based on lower heat value (PCI in French) (which is used in the EOLES model) rather than higher heat value (PCS)
+    
