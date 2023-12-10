@@ -22,8 +22,8 @@ import os
 import gc
 import subprocess
 
-#%% Functions' Def
-### Definition of functions used to launch runs of the model
+# Functions' Def
+# Definition of functions used to launch runs of the model
 
 
 def set_model():
@@ -391,6 +391,8 @@ def set_model():
     
     return(model)
 
+
+
 def save_model(model, outputs):
     production = pd.DataFrame(index = range(len(model.a*model.h)),columns=['area','hour','nmd','pv','river','nuclear','lake_phs','wind','coal','gas','oil','battery','phs_in','battery_in','net_imports','net_exo_imports'])
     production.area = np.repeat(list(model.a._values),len(model.h), axis=0)
@@ -448,6 +450,7 @@ def save_model(model, outputs):
     capa_on.to_csv(outputs+"/capa_on.csv",index=True)
     prices.to_csv(outputs+"/prices.csv",index=True)
     FRtrade.to_csv(outputs+"/FRtrade.csv",index=True)
+
 
 def run_model(scenario, year, outputs):
     print("SCENARIO =",scenario)
