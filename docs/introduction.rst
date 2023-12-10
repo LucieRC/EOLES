@@ -1,0 +1,1 @@
+In this part is provided a detailed description of the model's structure.
