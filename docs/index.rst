@@ -22,7 +22,14 @@ Here are a few questions these models can address:
    :maxdepth: 1
    :caption: Model components
 
+   sets
    variables
    constraints
    objective_function
+   
+.. toctree::
+   :maxdepth: 1
+   :caption: Model description
 
+   introduction
+   utilities
