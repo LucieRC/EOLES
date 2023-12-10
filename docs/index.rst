@@ -19,6 +19,11 @@ Here are a few questions these models can address:
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :hidden:
+   :maxdepth: 1
+   :caption: Model components
+
+   variables
+   constraints
+   objective_function
 
