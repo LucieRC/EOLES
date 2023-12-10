@@ -1,0 +1,4 @@
+setuptools
+sphinx
+sphinx_book_theme
+sphinxcontrib-bibtex
