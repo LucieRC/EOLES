@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'EOLES'
-copyright = '2023, Lucie Ricq'
-author = 'Lucie Ricq'
+copyright = '2019-2023, Behrang Shirizadeh, Quentin Perrier, Philippe Quirion, Clément Leblanc, Célia Escribe, Laure Baratgin and Lucie Ricq'
+author = 'Behrang Shirizadeh, Quentin Perrier, Philippe Quirion, Clément Leblanc, Célia Escribe, Laure Baratgin and Lucie Ricq'
 
 # The full version, including alpha/beta/rc tags
 release = '2023'
@@ -31,6 +31,15 @@ release = '2023'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    "myst_parser",
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.todo",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.graphviz",
+    "sphinxcontrib.bibtex",
+    "sphinx.ext.imgconverter"  # for SVG conversion
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -47,7 +56,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'sphinx_book_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
