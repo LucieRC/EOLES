@@ -31,15 +31,15 @@ release = '2023'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "myst_parser",
-    "sphinx.ext.autosectionlabel",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.todo",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.graphviz",
-    "sphinxcontrib.bibtex",
-    "sphinx.ext.imgconverter"  # for SVG conversion
+    # "myst_parser",
+    # "sphinx.ext.autosectionlabel",
+    # "sphinx.ext.intersphinx",
+    # "sphinx.ext.todo",
+    # "sphinx.ext.mathjax",
+    # "sphinx.ext.napoleon",
+    # "sphinx.ext.graphviz",
+    # "sphinxcontrib.bibtex",
+    # "sphinx.ext.imgconverter"  # for SVG conversion
 ]
 
 # Add any paths that contain templates here, relative to this directory.
