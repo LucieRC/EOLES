@@ -119,7 +119,7 @@ class ModelEOLES():
             for i in range(self.nb_years - 1):
                 self.gas_demand = pd.concat([self.gas_demand, self.hourly_heat_gas], ignore_index=True)
 
-        # loading exogeneous static data
+        # Loading exogeneous static data
         # data_static = read_input_static(self.config, self.year)
         data_technology = read_technology_data(self.config, self.year)  # get current technology data
         data_annual = read_annual_data(self.config, self.anticipated_year)  # get anticipated demand and energy prices
