@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'EOLES'
-copyright = '2019-2023, Behrang Shirizadeh, Quentin Perrier, Philippe Quirion, Clément Leblanc, Célia Escribe, Laure Baratgin and Lucie Ricq'
-author = 'Behrang Shirizadeh, Quentin Perrier, Philippe Quirion, Clément Leblanc, Célia Escribe, Laure Baratgin and Lucie Ricq'
+copyright = '2019-2023, Behrang Shirizadeh, Quentin Perrier, Philippe Quirion, Clément Leblanc, Célia Escribe, Laure Baratgin'
+author = 'Lucie Ricq'
 
 # The full version, including alpha/beta/rc tags
 release = '2023'
