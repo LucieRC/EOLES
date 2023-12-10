@@ -19,7 +19,6 @@ Here are a few questions these models can address:
 
 
 .. toctree::
-   :hidden:
    :maxdepth: 1
    :caption: Model components
 
