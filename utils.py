@@ -148,49 +148,49 @@ def load_evolution_data(config):
 
 ### Defining the model
 
-def process_RTE_demand(config, year, demand, scenario, method, calibration=False, hourly_residential_heating_RTE=None):
-    """Create electricity demand profile, where we have excluded the residential heating demand, based on RTE projections.
-    """
-    if not calibration:  # classical setting, we get projected values from RTE scenarios.
-        demand_noP2G_RTE_timesteps = get_pandas(config["demand_noP2G_RTE_timesteps"],
-                                                lambda x: pd.read_csv(x, index_col=[0,1]).squeeze())
-        # demand_noP2G_RTE = demand_noP2G_RTE_timesteps[year]  # in TWh
-        demand_noP2G_RTE = demand_noP2G_RTE_timesteps.loc[config["demand_scenario"]]
-        demand_noP2G_RTE = demand_noP2G_RTE[year]  # get specific potential for year of interest
+# def process_RTE_demand(config, year, demand, scenario, method, calibration=False, hourly_residential_heating_RTE=None):
+#     """Create electricity demand profile, where we have excluded the residential heating demand, based on RTE projections.
+#     """
+#     if not calibration:  # classical setting, we get projected values from RTE scenarios.
+#         demand_noP2G_RTE_timesteps = get_pandas(config["demand_noP2G_RTE_timesteps"],
+#                                                 lambda x: pd.read_csv(x, index_col=[0,1]).squeeze())
+#         # demand_noP2G_RTE = demand_noP2G_RTE_timesteps[year]  # in TWh
+#         demand_noP2G_RTE = demand_noP2G_RTE_timesteps.loc[config["demand_scenario"]]
+#         demand_noP2G_RTE = demand_noP2G_RTE[year]  # get specific potential for year of interest
 
-        # # Demand for EV
-        # demand_ev_timesteps = get_pandas(config["demand_ev_timesteps"],
-        #                                                       lambda x: pd.read_csv(x, index_col=[0, 1]).squeeze())
-        #
-        # # TODO: ajouter ce profile de demande EV dans le preprocessing de la demande
-        # demand_ev = demand_ev_timesteps.loc[config["demand_scenario"]]
-        # demand_ev = demand_ev[year]  # get specific potential for year of interest
-        # demand_ev_ref = demand_ev[2035]  # get reference value for 2035 which is the year of reference for the demand profile
+#         # # Demand for EV
+#         # demand_ev_timesteps = get_pandas(config["demand_ev_timesteps"],
+#         #                                                       lambda x: pd.read_csv(x, index_col=[0, 1]).squeeze())
+#         #
+#         # # TODO: ajouter ce profile de demande EV dans le preprocessing de la demande
+#         # demand_ev = demand_ev_timesteps.loc[config["demand_scenario"]]
+#         # demand_ev = demand_ev[year]  # get specific potential for year of interest
+#         # demand_ev_ref = demand_ev[2035]  # get reference value for 2035 which is the year of reference for the demand profile
 
-        assert math.isclose(demand.sum(), 580 * 1e3), "Total yearly demand is not correctly calculated."
-        adjust_demand = (demand_noP2G_RTE * 1e3 - 580 * 1e3) / 8760  # 580TWh is the total of the profile we use as basis for electricity hourly demand (from RTE), c'est bien vérifié
-        demand_elec_RTE_noP2G = demand * (demand_noP2G_RTE / 580)  # new adjustment for demand profile
+#         assert math.isclose(demand.sum(), 580 * 1e3), "Total yearly demand is not correctly calculated."
+#         adjust_demand = (demand_noP2G_RTE * 1e3 - 580 * 1e3) / 8760  # 580TWh is the total of the profile we use as basis for electricity hourly demand (from RTE), c'est bien vérifié
+#         demand_elec_RTE_noP2G = demand * (demand_noP2G_RTE / 580)  # new adjustment for demand profile
 
-        demand_residential_heating_RTE_timesteps = get_pandas(config["demand_residential_heating_RTE_timesteps"],
-                                                              lambda x: pd.read_csv(x, index_col=[0, 1]).squeeze())
+#         demand_residential_heating_RTE_timesteps = get_pandas(config["demand_residential_heating_RTE_timesteps"],
+#                                                               lambda x: pd.read_csv(x, index_col=[0, 1]).squeeze())
 
-        # demand_residential_heating = demand_residential_heating_RTE_timesteps[year]  # in TWh
-        demand_residential_heating = demand_residential_heating_RTE_timesteps.loc[config["demand_scenario"]]
-        demand_residential_heating = demand_residential_heating[year]  # get specific potential for year of interest
+#         # demand_residential_heating = demand_residential_heating_RTE_timesteps[year]  # in TWh
+#         demand_residential_heating = demand_residential_heating_RTE_timesteps.loc[config["demand_scenario"]]
+#         demand_residential_heating = demand_residential_heating[year]  # get specific potential for year of interest
 
-        hourly_residential_heating_RTE = create_hourly_residential_demand_profile(demand_residential_heating * 1e3,
-                                                                                  method=method)  # TODO: a changer a priori, ce n'est plus le bon profil
+#         hourly_residential_heating_RTE = create_hourly_residential_demand_profile(demand_residential_heating * 1e3,
+#                                                                                   method=method)  # TODO: a changer a priori, ce n'est plus le bon profil
 
-        # TODO: a changer !! test pour l'impact sur le carbon content
-        # demand_elec_RTE_no_residential_heating = demand_elec_RTE_noP2G - hourly_residential_heating_RTE * 38.5/43  # we remove residential electric demand
-        demand_elec_RTE_no_residential_heating = demand_elec_RTE_noP2G - hourly_residential_heating_RTE  # we remove residential electric demand
+#         # TODO: a changer !! test pour l'impact sur le carbon content
+#         # demand_elec_RTE_no_residential_heating = demand_elec_RTE_noP2G - hourly_residential_heating_RTE * 38.5/43  # we remove residential electric demand
+#         demand_elec_RTE_no_residential_heating = demand_elec_RTE_noP2G - hourly_residential_heating_RTE  # we remove residential electric demand
 
-    else:  # in this case, we take a historical demand chronic instead of projected RTE profile, so we do not need to readjust. Moreover, there is no power to gas for now.
-        demand_elec_RTE_no_residential_heating = demand
-        if hourly_residential_heating_RTE is not None:  # in this case, we also give a profile for electric residential heating through the coupling (which is necessary to calculate carbon content)
-            demand_elec_RTE_no_residential_heating = demand_elec_RTE_no_residential_heating - hourly_residential_heating_RTE
+#     else:  # in this case, we take a historical demand chronic instead of projected RTE profile, so we do not need to readjust. Moreover, there is no power to gas for now.
+#         demand_elec_RTE_no_residential_heating = demand
+#         if hourly_residential_heating_RTE is not None:  # in this case, we also give a profile for electric residential heating through the coupling (which is necessary to calculate carbon content)
+#             demand_elec_RTE_no_residential_heating = demand_elec_RTE_no_residential_heating - hourly_residential_heating_RTE
 
-    return demand_elec_RTE_no_residential_heating
+#     return demand_elec_RTE_no_residential_heating
 
 
 def profile_ev(total_consumption):
@@ -319,13 +319,12 @@ def define_month_hours(first_month, nb_years, months_hours, hours_by_months):
 
 ### Processing output
 
-def get_technical_cost(model, objective, scc, heat_oil, nb_years, emission_rate_gas=0.2295, emission_rate_oil=0.324, emission_rate_coal=0.986):
+def get_technical_cost(model, objective, scc, nb_years, emission_rate_gas=0.2295, emission_rate_oil=0.324, emission_rate_coal=0.986):
     """Returns technical cost (social cost without CO2 emissions-related cost"""
     gene_ngas = sum(value(model.gene["natural_gas", hour]) for hour in model.h)   # GWh
     gene_coal = sum(value(model.gene['coal', hour]) for hour in model.h)  # GWh
-    net_emissions = gene_ngas * emission_rate_gas / 1000 + heat_oil * emission_rate_oil / 1000  + gene_coal * emission_rate_coal / 1000  # MtCO2
-    emissions = pd.Series({"natural_gas": gene_ngas * emission_rate_gas / 1000 / nb_years, "Oil fuel": heat_oil * emission_rate_oil / 1000 / nb_years,
-                           'Coal': gene_coal * emission_rate_coal / 1000 / nb_years})
+    net_emissions = gene_ngas * emission_rate_gas / 1000 + gene_coal * emission_rate_coal / 1000  # MtCO2
+    emissions = pd.Series({"natural_gas": gene_ngas * emission_rate_gas / 1000 / nb_years, 'Coal': gene_coal * emission_rate_coal / 1000 / nb_years})
     technical_cost = objective - net_emissions * scc / 1000
     return technical_cost, emissions
 
@@ -681,7 +680,9 @@ def extract_annualized_costs_investment_new_capa_nofOM(capacities, energy_capaci
     return costs_new_capacity[["annualized_costs"]], costs_new_energy_capacity[["annualized_costs"]]
 
 
-def extract_functionment_cost(model, capacities, fOM, vOM, generation, oil_consumption, wood_consumption, anticipated_scc, actual_scc, carbon_constraint=True,
+def extract_functionment_cost(model, capacities, fOM, vOM, generation, 
+                            #   oil_consumption, wood_consumption, 
+                              anticipated_scc, actual_scc, carbon_constraint=True,
                               nb_years=1):
     """Returns functionment cost, including fOM and vOM. vOM for gas and oil include the SCC. Unit: 1e6€/yr
     This function has to update vOM for natural gas and fossil fuel based on the actual scc, and no longer based on the
@@ -709,9 +710,12 @@ def extract_functionment_cost(model, capacities, fOM, vOM, generation, oil_consu
         system_fOM_vOM["functionment_cost_SCC"] = system_fOM_vOM["generation"] * system_fOM_vOM["vOM_SCC_only"]
         system_fOM_vOM_df = system_fOM_vOM[["functionment_cost_noSCC"]]
 
-        total_wood_consumption = wood_consumption + sum(value(model.gene["central_wood_boiler", h]) for h in model.h)
-        oil_functionment_cost_no_scc, wood_functionment_cost_no_scc = oil_consumption * vOM_no_scc["oil"], total_wood_consumption * vOM_no_scc["wood"]
-        carbon_cost = system_fOM_vOM["functionment_cost_SCC"].sum() + oil_consumption * vOM_SCC_only["oil"] + total_wood_consumption * vOM_SCC_only["wood"]
+        total_wood_consumption = sum(value(model.gene["central_wood_boiler", h]) for h in model.h) #+wood_consumption
+        # oil_functionment_cost_no_scc = oil_consumption * vOM_no_scc["oil"]
+        wood_functionment_cost_no_scc = total_wood_consumption * vOM_no_scc["wood"]
+        carbon_cost = system_fOM_vOM["functionment_cost_SCC"].sum() \
+            + total_wood_consumption * vOM_SCC_only["wood"]
+            # + oil_consumption * vOM_SCC_only["oil"]
 
         system_fOM_vOM_df = pd.concat([system_fOM_vOM_df, pd.DataFrame(index=["oil"], data={'functionment_cost_noSCC': [oil_functionment_cost_no_scc]})], axis=0)
         system_fOM_vOM_df = pd.concat([system_fOM_vOM_df, pd.DataFrame(index=["wood"], data={'functionment_cost_noSCC': [wood_functionment_cost_no_scc]})], axis=0)
@@ -723,23 +727,12 @@ def extract_functionment_cost(model, capacities, fOM, vOM, generation, oil_consu
         system_fOM_vOM = system_fOM_vOM.dropna()
         system_fOM_vOM["functionment_cost"] = system_fOM_vOM["capacity"] * system_fOM_vOM["fOM"] + system_fOM_vOM["generation"] * system_fOM_vOM["vOM"]
         system_fOM_vOM_df = system_fOM_vOM[["functionment_cost"]]
-        total_wood_consumption = wood_consumption + sum(value(model.gene["central_wood_boiler", h]) for h in model.h)
-        oil_functionment_cost, wood_functionment_cost = oil_consumption * new_vOM["oil"], total_wood_consumption * new_vOM["wood"]
+        total_wood_consumption = sum(value(model.gene["central_wood_boiler", h]) for h in model.h) #+wood_consumption
+        # oil_functionment_cost = oil_consumption * new_vOM["oil"]
+        wood_functionment_cost = total_wood_consumption * new_vOM["wood"]
         system_fOM_vOM_df = pd.concat([system_fOM_vOM_df, pd.DataFrame(index=["oil"], data={'functionment_cost': [oil_functionment_cost]})], axis=0)
         system_fOM_vOM_df = pd.concat([system_fOM_vOM_df, pd.DataFrame(index=["wood"], data={'functionment_cost': [wood_functionment_cost]})], axis=0)
 
-    # # OLD VERSION
-    # new_vOM = vOM.copy()
-    # new_vOM.loc["natural_gas"] = update_ngas_cost(new_vOM.loc["natural_gas"], scc=(actual_scc - anticipated_scc), emission_rate=0.2295)  # €/kWh
-    # new_vOM["fuel_boiler"] = update_ngas_cost(new_vOM["fuel_boiler"], scc=(actual_scc - anticipated_scc), emission_rate=0.324)
-    #
-    # system_fOM_vOM = pd.concat([capacities, fOM, new_vOM, generation], axis=1, ignore_index=True).rename(columns={0: "capacity", 1: "fOM", 2: "vOM", 3: "generation"})
-    # system_fOM_vOM = system_fOM_vOM.dropna()
-    # system_fOM_vOM["functionment_cost"] = system_fOM_vOM["capacity"] * system_fOM_vOM["fOM"] + system_fOM_vOM["generation"] * system_fOM_vOM["vOM"]
-    # system_fOM_vOM_df = system_fOM_vOM[["functionment_cost"]]
-    # oil_functionment_cost, wood_functionment_cost = oil_consumption * new_vOM["fuel_boiler"], wood_consumption * new_vOM["wood_boiler"]
-    # system_fOM_vOM_df = pd.concat([system_fOM_vOM_df, pd.DataFrame(index=["oil_boiler"], data={'functionment_cost': [oil_functionment_cost]})], axis=0)
-    # system_fOM_vOM_df = pd.concat([system_fOM_vOM_df, pd.DataFrame(index=["wood_boiler"], data={'functionment_cost': [wood_functionment_cost]})], axis=0)
     return system_fOM_vOM_df
 
 
