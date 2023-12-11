@@ -31,8 +31,8 @@ from pyomo.environ import (
 
 class ModelEOLES():
     def __init__(self, name, config, logger, 
-                 hourly_heat_elec, hourly_heat_gas, 
-                 hourly_heat_district=None,
+                #  hourly_heat_elec, hourly_heat_gas, 
+                #  hourly_heat_district=None,
                 #  wood_consumption=0, oil_consumption=0,
                  existing_capacity=None, existing_charging_capacity=None, existing_energy_capacity=None, 
                  maximum_capacity=None,
@@ -71,16 +71,16 @@ class ModelEOLES():
         self.existing_annualized_costs_H2 = existing_annualized_costs_H2
         # self.calibration = calibration  # whether we rely on the coupling for the forecast of electricity demand or not
 
-        assert hourly_heat_elec is not None, "Hourly electricity heat profile missing."
-        assert hourly_heat_gas is not None, "Hourly gas heat profile missing."
-        self.hourly_heat_elec = hourly_heat_elec
-        self.hourly_heat_gas = hourly_heat_gas
+        # assert hourly_heat_elec is not None, "Hourly electricity heat profile missing."
+        # assert hourly_heat_gas is not None, "Hourly gas heat profile missing."
+        # self.hourly_heat_elec = hourly_heat_elec
+        # self.hourly_heat_gas = hourly_heat_gas
 
         # loading exogeneous variable data
         # if self.calibration:
         #     data_hourly_and_anticipated = read_hourly_data(config, self.anticipated_year, method=method_hourly_profile, calibration=self.calibration, hourly_heat_elec=hourly_heat_elec)
         # else:  # classical setting
-        data_hourly_and_anticipated = read_hourly_data(config, self.anticipated_year, method=method_hourly_profile)#, calibration=self.calibration)
+        data_hourly_and_anticipated = read_hourly_data(config, self.anticipated_year)#, method=method_hourly_profile)#, calibration=self.calibration)
         self.load_factors = data_hourly_and_anticipated["load_factors"]
         self.elec_demand1y = data_hourly_and_anticipated["demand"]
         self.lake_inflows = data_hourly_and_anticipated["lake_inflows"]
@@ -88,23 +88,23 @@ class ModelEOLES():
 
         
         if self.nb_years == 1:
-            self.elec_demand1y = self.elec_demand1y + self.hourly_heat_elec  # we add electricity demand from residential heating
+            self.elec_demand1y = self.elec_demand1y #+ self.hourly_heat_elec  # we add electricity demand from residential heating
             self.elec_demand = self.elec_demand1y
             for i in range(self.nb_years - 1):  # plus nécessaire avec la condition if /else
                 self.elec_demand = pd.concat([self.elec_demand, self.elec_demand1y], ignore_index=True)
         else:  # nb_years > 1
             self.elec_demand = pd.Series()
             for i in range(self.nb_years):
-                self.elec_demand_year = self.elec_demand1y + self.hourly_heat_elec.loc[0:8760]  # TODO: a changer selon format Lucas pour ajouter la thermosensibilité
+                self.elec_demand_year = self.elec_demand1y #+ self.hourly_heat_elec.loc[0:8760]  # TODO: a changer selon format Lucas pour ajouter la thermosensibilité
                 self.elec_demand = pd.concat([self.elec_demand, self.elec_demand_year], ignore_index=True)
 
         # Creation of demand for district heating
-        if hourly_heat_district is not None:
-            self.district_heating_demand = hourly_heat_district
-            for i in range(self.nb_years - 1):
-                self.district_heating_demand = pd.concat([self.district_heating_demand, hourly_heat_district], ignore_index=True)
-        else:  # if not specified, this is equal to 0
-            self.district_heating_demand = pd.Series(0, index=self.elec_demand.index)
+        # if hourly_heat_district is not None:
+        #     self.district_heating_demand = hourly_heat_district
+        #     for i in range(self.nb_years - 1):
+        #         self.district_heating_demand = pd.concat([self.district_heating_demand, hourly_heat_district], ignore_index=True)
+        # else:  # if not specified, this is equal to 0
+        self.district_heating_demand = pd.Series(0, index=self.elec_demand.index)
         
         # self.wood_consumption = wood_consumption
         # self.oil_consumption = oil_consumption
@@ -112,11 +112,11 @@ class ModelEOLES():
         self.H2_demand = {}
         self.CH4_demand = {}
 
-        if self.hourly_heat_gas is not None:  # we provide hourly gas data
-            # TODO: a changer selon le format choisi par Lucas pour nb_years > 1, pour ajouter la thermosensibilité
-            self.gas_demand = self.hourly_heat_gas
-            for i in range(self.nb_years - 1):
-                self.gas_demand = pd.concat([self.gas_demand, self.hourly_heat_gas], ignore_index=True)
+        # if self.hourly_heat_gas is not None:  # we provide hourly gas data
+        #     # TODO: a changer selon le format choisi par Lucas pour nb_years > 1, pour ajouter la thermosensibilité
+        #     self.gas_demand = self.hourly_heat_gas
+        #     for i in range(self.nb_years - 1):
+        #         self.gas_demand = pd.concat([self.gas_demand, self.hourly_heat_gas], ignore_index=True)
 
         # loading exogeneous static data
         # data_static = read_input_static(self.config, self.year)
@@ -682,8 +682,8 @@ class ModelEOLES():
         self.objective = self.solver_results["Problem"][0]["Upper bound"]
         self.technical_cost, self.emissions = get_technical_cost(self.model, self.objective, self.anticipated_scc, self.nb_years)
         self.hourly_generation = extract_hourly_generation(self.model, elec_demand=self.elec_demand,  CH4_demand=list(self.CH4_demand.values()),
-                                                           H2_demand=list(self.H2_demand.values()), conversion_efficiency=self.conversion_efficiency,
-                                                           hourly_heat_elec=self.hourly_heat_elec, hourly_heat_gas=self.hourly_heat_gas)
+                                                           H2_demand=list(self.H2_demand.values()), conversion_efficiency=self.conversion_efficiency)#,
+                                                        #    hourly_heat_elec=self.hourly_heat_elec, hourly_heat_gas=self.hourly_heat_gas)
         self.gas_carbon_content, self.dh_carbon_content, self.heat_elec_carbon_content, self.heat_elec_carbon_content_day = \
             get_carbon_content(self.hourly_generation, self.conversion_efficiency)
         self.peak_electricity_load_info = extract_peak_load(self.hourly_generation, self.conversion_efficiency, self.input_years)

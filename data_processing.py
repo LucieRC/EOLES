@@ -5,7 +5,7 @@ import json
 import os
 import math
 
-def read_hourly_data(config, year, scenario='Reference', method="valentin"):#, hourly_heat_elec=None): # calibration=False,
+def read_hourly_data(config, year):#, scenario='Reference'):#, method="valentin"):#, hourly_heat_elec=None): # calibration=False,
     """Reads data defined at the hourly scale"""
     load_factors = get_pandas(config["load_factors"],
                               lambda x: pd.read_csv(x, index_col=[0, 1], header=None).squeeze("columns"))
