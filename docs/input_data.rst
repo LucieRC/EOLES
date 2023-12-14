@@ -22,8 +22,12 @@ Each of those subfolders is quickly described below.
 
 .. _demand:
 
-Demand (demand)
+Demand (demand)   
 ================
+
+Demand for 2050, RTE
+----------------------
+.. image:: img/demand/demand2050_RTE.png
 
 Gas heating demand tertiary
 ----------------------------

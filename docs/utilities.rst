@@ -118,6 +118,13 @@ The function returns a tuple containing all these datasets, playing a crucial ro
 
 ...
 
+`annualized_costs_investment_historical`
+==========================================
+
+`annualized_costs_investment_historical_nofOM`
+===============================================
+
+
 Usage Examples
 ---------------
 
