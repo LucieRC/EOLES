@@ -38,6 +38,8 @@ Historical data (historical_data)
 .. image:: img/historical_data/existing_capacity_historical.png
 .. image:: img/historical_data/existing_capacity.png
 .. image:: img/historical_data/existing_charging_capacity_historical.png
+.. image:: img/historical_data/existing_energy_capacity_historical.png
+
 .. table::
    :align: center
 
