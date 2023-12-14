@@ -18,6 +18,13 @@ The "inputs" folder is subdivided into the following folders:
 
 Each of those subfolders is quickly described below.
 
+.. _demand:
+
+Demand (demand)
+================
+
+.. image:: img/demand/gas_heating_demand_tertiary.png
+
 
 
 .. _historical_data:
