@@ -24,6 +24,7 @@ Demand (demand)
 ================
 
 .. image:: img/demand/gas_heating_demand_tertiary.png
+.. image:: img/demand/ECS_demand.png
 
 
 
