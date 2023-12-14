@@ -78,12 +78,12 @@ Storage Charging Capacity Constraint
 Hydrogen Discharge Capacity Constraint
 --------------------------------------
 .. math::
-    capacity_{H_2} \leq \frac{energy\_capacity_{H_2} \cdot 26}{3000}
+    capacity_{H2} \leq \frac{energy\_capacity_{H2} \cdot 26}{3000}
 
 Hydrogen Charging Capacity Constraint
 -------------------------------------
 .. math::
-    charging\_capacity_{H_2} \leq \frac{energy\_capacity_{H_2} \cdot 6.4}{3000}
+    charging\_capacity_{H2} \leq \frac{energy\_capacity_{H2} \cdot 6.4}{3000}
 
 PHS Charging Capacity Constraint
 --------------------------------
@@ -133,7 +133,7 @@ FRR Reserves Constraint
 Hydrogen Balance Constraint
 ---------------------------
 .. math::
-    gene_{electro, h} + gene_{H_2, h} = \frac{gene_{H2\_CCGT, h}}{conv_{\eta}_{H2\_CCGT}} + H2\_demand_{h} + storage_{H_2, h} \quad \forall h \in H
+    gene_{electro, h} + gene_{H2, h} = \frac{gene_{H2\_CCGT, h}}{conv_{\eta}_{H2\_CCGT}} + H2\_demand_{h} + storage_{H2, h} \quad \forall h \in H
 
 Methane Balance Constraint
 --------------------------
