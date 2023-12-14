@@ -133,23 +133,23 @@ FRR Reserves Constraint
 Hydrogen Balance Constraint
 ---------------------------
 .. math::
-    gene_{electro, h} + gene_{H2, h} = \frac{gene_{H2\_CCGT, h}}{conv_{\eta}_{H2\_CCGT}} + H2\_demand_{h} + storage_{H2, h} \quad \forall h \in H
+    gene_{electro, h} + gene_{H2, h} = \frac{gene_{H2\_CCGT, h}}{conv\_{\eta}_{H2\_CCGT}} + H2\_demand_{h} + storage_{H2, h} \quad \forall h \in H
 
 Methane Balance Constraint
 --------------------------
 .. math::
     gene_{methana, h} + gene_{methani, h} + gene_{pyr, h} + gene_{CH4, h} + gene_{nat\_gas, h} = \\
-     \quad \frac{gene_{OCGT, h}}{conv_{\eta}_{OCGT}} + \frac{gene_{CCGT, h}}{conv_{\eta}_{CCGT}} + gene_{central\_gas\_boiler, h} + CH4\_demand_{h} + storage_{CH4, h} \quad \forall h \in H
+     \quad \frac{gene_{OCGT, h}}{conv\_{\eta}_{OCGT}} + \frac{gene_{CCGT, h}}{conv\_{\eta}_{CCGT}} + gene_{central\_gas\_boiler, h} + CH4\_demand_{h} + storage_{CH4, h} \quad \forall h \in H
 
 District Heating Balance Constraint
 -----------------------------------
 .. math::
-    \sum_{tec} gene_{tec, h} \cdot conv_{\eta}_{tec} \geq district\_heating\_demand_{h} \quad \forall h \in H, tec \in DH\_balance
+    \sum_{tec} gene_{tec, h} \cdot conv\_{\eta}_{tec} \geq district\_heating\_demand_{h} \quad \forall h \in H, tec \in DH\_balance
 
 Electricity Adequacy Constraint
 --------------------------------
 .. math::
-    \sum_{str} storage_{str, h} + \frac{gene_{electro, h}}{conv_{\eta}_{electro}} + \frac{gene_{methana, h}}{conv_{\eta}_{methana}} + \sum_{balance} gene_{balance, h} \geq elec\_demand_{h} \quad \forall h \in H
+    \sum_{str} storage_{str, h} + \frac{gene_{electro, h}}{conv\_{\eta}_{electro}} + \frac{gene_{methana, h}}{conv\_{\eta}_{methana}} + \sum_{balance} gene_{balance, h} \geq elec\_demand_{h} \quad \forall h \in H
 
 Nuclear Ramping Up Flexibility Constraint
 -----------------------------------------
@@ -164,7 +164,7 @@ Nuclear Ramping Down Flexibility Constraint
 Methanation CO2 Balance Constraint
 ----------------------------------
 .. math::
-    \frac{\sum_{h=8760y}^{8760(y+1)-1} gene_{methana, h}}{conv_{\eta}_{methana}} \leq \sum_{h=8760y}^{8760(y+1)-1} gene_{methani, h} \cdot \%\_CO2\_from\_methani \quad \forall y \in Y
+    \frac{\sum_{h=8760y}^{8760(y+1)-1} gene_{methana, h}}{conv\_{\eta}_{methana}} \leq \sum_{h=8760y}^{8760(y+1)-1} gene_{methani, h} \cdot \%\_CO2\_from\_methani \quad \forall y \in Y
 
 Carbon Budget Constraint
 -------------------------
