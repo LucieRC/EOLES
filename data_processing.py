@@ -9,6 +9,7 @@ def read_hourly_data(config, year):#, scenario='Reference'):#, method="valentin"
     """Reads data defined at the hourly scale"""
     load_factors = get_pandas(config["load_factors"],
                               lambda x: pd.read_csv(x, index_col=[0, 1], header=None).squeeze("columns"))
+    # Get the electricity demand
     demand = get_pandas(config["demand"], lambda x: pd.read_csv(x, index_col=0, header=None).squeeze("columns"))  # GW
 
     # demand_no_residential = process_RTE_demand(config, year, demand, scenario, method=method)#, hourly_residential_heating_RTE=hourly_heat_elec) # calibration=calibration, 

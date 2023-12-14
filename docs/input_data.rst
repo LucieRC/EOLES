@@ -89,6 +89,11 @@ Storage annuity historical
 Technology potential (technology_potential)
 ============================================
 
+Maximum capacity
+---------------------------
+.. image:: img/technology_potential/maximum_capacity.png
+
+
 Maximum capacity evolution
 ---------------------------
 .. image:: img/technology_potential/maximum_capacity_evolution.png

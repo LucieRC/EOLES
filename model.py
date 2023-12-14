@@ -88,7 +88,7 @@ class ModelEOLES():
 
         
         if self.nb_years == 1:
-            self.elec_demand1y = self.elec_demand1y #+ self.hourly_heat_elec  # we add electricity demand from residential heating
+            # self.elec_demand1y = self.elec_demand1y + self.hourly_heat_elec  # we add electricity demand from residential heating
             self.elec_demand = self.elec_demand1y
             for i in range(self.nb_years - 1):  # plus nécessaire avec la condition if /else
                 self.elec_demand = pd.concat([self.elec_demand, self.elec_demand1y], ignore_index=True)
