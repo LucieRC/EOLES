@@ -34,8 +34,8 @@ class ModelEOLES():
                 #  hourly_heat_elec, hourly_heat_gas, 
                 #  hourly_heat_district=None,
                 #  wood_consumption=0, oil_consumption=0,
-                 existing_capacity=None, existing_charging_capacity=None, existing_energy_capacity=None, 
-                 maximum_capacity=None,
+                 existing_capacity=None, existing_charging_capacity=None, 
+                 existing_energy_capacity=None, maximum_capacity=None,
                  method_hourly_profile="valentin", 
                  anticipated_social_cost_of_carbon=0, actual_social_cost_of_carbon=0, 
                  year=2050, anticipated_year=2050,
@@ -86,7 +86,7 @@ class ModelEOLES():
         self.lake_inflows = data_hourly_and_anticipated["lake_inflows"]
         assert int(self.load_factors.shape[0]/(8760*6)) == self.nb_years, "Specified number of years does not match load factors"
 
-        
+        # Choice to consider only 1 or more weather years?
         if self.nb_years == 1:
             # self.elec_demand1y = self.elec_demand1y + self.hourly_heat_elec  # we add electricity demand from residential heating
             self.elec_demand = self.elec_demand1y
@@ -122,9 +122,10 @@ class ModelEOLES():
         # data_static = read_input_static(self.config, self.year)
         data_technology = read_technology_data(self.config, self.year)  # get current technology data
         data_annual = read_annual_data(self.config, self.anticipated_year)  # get anticipated demand and energy prices
-        data_technology.update(data_annual)
+        data_technology.update(data_annual) # inserts data_annual to data_technology
         data_static = data_technology
-        if scenario_cost is not None:  # we update costs based on data given in scenario
+        if scenario_cost is not None:  
+            # we update costs based on data given in scenario
             for df in scenario_cost.keys():
                 if df == "existing_capacity" and existing_capacity is not None:
                     for tec in scenario_cost[df].keys():
@@ -141,6 +142,8 @@ class ModelEOLES():
                 for tec in scenario_cost[df].keys():
                     data_static[df][tec] = scenario_cost[df][tec]
 
+
+        # Define parameters for all the technology data directly on the model
         self.epsilon = data_static["epsilon"]
         if existing_capacity is not None:
             self.existing_capacity = existing_capacity
@@ -184,8 +187,7 @@ class ModelEOLES():
         self.vOM["natural_gas"], self.vOM['coal'] = self.energy_prices["natural_gas"] * 1e-3, self.energy_prices["coal"] * 1e-3
 
         # calculate annuities
-        self.annuities = calculate_annuities_capex(self.discount_rate, self.capex, self.construction_time,
-                                                   self.lifetime)
+        self.annuities = calculate_annuities_capex(self.discount_rate, self.capex, self.construction_time, self.lifetime)
         self.storage_annuities = calculate_annuities_storage_capex(self.discount_rate, self.storage_capex,
                                                                    self.construction_time, self.lifetime)
 

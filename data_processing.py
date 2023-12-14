@@ -514,3 +514,72 @@ def transportation_distribution_cost(model, prediction_transport_and_distrib_ann
                                     prediction_transport_and_distrib_annuity["solar"] * solar_capacity + \
                                     prediction_transport_and_distrib_annuity["onshore"] * onshore_capacity   # 1e9 €/yr
     return transport_and_distrib_annuity
+
+
+
+
+def preprocessing_eoles(anticipated_year_eoles, new_capacity_tot, new_charging_capacity_tot, new_energy_capacity_tot,
+                        annualized_costs_new_capacity, annualized_costs_new_energy_capacity, couplingparam,
+                        existing_capacity_historical, existing_charging_capacity_historical,
+                        existing_energy_capacity_historical, maximum_capacity_evolution, capex_annuity_fOM_historical,
+                        storage_annuity_historical, capex_annuity_historical):
+    """
+    Called for the dynamic versions of EOLES only.
+    
+    Args:
+        new_capacity_tot (): output_dynamics['new_capacity_tot'] 
+    """
+    #### Get existing and maximum capacities
+    existing_capa_historical_y = existing_capacity_historical[[str(anticipated_year_eoles)]].squeeze()  # get historical capacity still installed for year of interest
+    existing_charging_capacity_historical_y = existing_charging_capacity_historical[[str(anticipated_year_eoles)]].squeeze()
+    existing_energy_capacity_historical_y = existing_energy_capacity_historical[[str(anticipated_year_eoles)]].squeeze()
+
+    new_maximum_capacity_y = maximum_capacity_evolution[
+        [str(anticipated_year_eoles)]].squeeze()  # get maximum new capacity to be built
+
+    # Existing capacities at year y
+    existing_capacity = existing_capa_historical_y + new_capacity_tot  # existing capacity are equal to newly built
+    # capacities over the whole time horizon before t + existing capacity (from before 2020)
+    existing_charging_capacity = existing_charging_capacity_historical_y + new_charging_capacity_tot
+    existing_energy_capacity = existing_energy_capacity_historical_y + new_energy_capacity_tot
+
+    if couplingparam.aggregated_potential:  # we do not take into account previously invested capacity
+        maximum_capacity = (existing_capa_historical_y + new_maximum_capacity_y).dropna()
+    else:
+        maximum_capacity = (
+                existing_capacity + new_maximum_capacity_y).dropna()  # we drop nan values, which correspond to
+        # technologies without any upper bound
+
+    #### Historical annualized costs based on historical costs
+    annualized_costs_capacity_historical, annualized_costs_energy_capacity_historical = eoles.utils.annualized_costs_investment_historical(
+        existing_capa_historical_y, capex_annuity_fOM_historical, existing_energy_capacity_historical_y,
+        storage_annuity_historical)
+
+    annualized_costs_capacity_nofOM_historical = eoles.utils.annualized_costs_investment_historical_nofOM(
+        existing_capa_historical_y, capex_annuity_historical, existing_energy_capacity_historical_y,
+        storage_annuity_historical)
+
+    ### Compile total annualized investment costs from existing capacities (both historical capacities + newly built capacities before t)
+    # Necessary for calculus of LCOE accounting for evolution of capacities
+    annualized_costs_capacity = pd.concat(
+        [annualized_costs_capacity_historical.rename(columns={'annualized_costs': 'historical_annualized_costs'}),
+         annualized_costs_new_capacity], axis=1)
+    annualized_costs_capacity['annualized_costs'] = annualized_costs_capacity['historical_annualized_costs'] + \
+                                                    annualized_costs_capacity['annualized_costs']
+    annualized_costs_energy_capacity = pd.concat([annualized_costs_energy_capacity_historical.rename(
+        columns={'annualized_costs': 'historical_annualized_costs'}), annualized_costs_new_energy_capacity], axis=1)
+    annualized_costs_energy_capacity['annualized_costs'] = annualized_costs_energy_capacity[
+                                                               'historical_annualized_costs'] + \
+                                                           annualized_costs_energy_capacity['annualized_costs']
+
+    preprocessing = {
+        'existing_capacity': existing_capacity,
+        'existing_charging_capacity': existing_charging_capacity,
+        'existing_energy_capacity': existing_energy_capacity,
+        'maximum_capacity': maximum_capacity,
+        'annualized_costs_capacity': annualized_costs_capacity,
+        'annualized_costs_energy_capacity': annualized_costs_energy_capacity,
+        'annualized_costs_capacity_nofOM_historical': annualized_costs_capacity_nofOM_historical,
+        'annualized_costs_energy_capacity_historical': annualized_costs_energy_capacity_historical
+    }
+    return preprocessing
