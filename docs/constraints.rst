@@ -7,8 +7,15 @@ Part under development.
 Generation Constraint for VRE Profiles
 ---------------------------------------
 
+.. math::
+   gene_{vre, h} = capacity_{vre} \cdot lf_{vre, h} \quad \forall h \in H, vre \in VRE
+
+
 Annual Nuclear Production Constraint
 ------------------------------------
+
+.. math::
+    \sum_{h=8760y}^{8760(y+1)-1} gene_{nuc, h} \leq cf_{nuc} \cdot capacity_{nuc} \cdot 8760 && \forall y \in Y
 
 Hourly Nuclear Production Constraint
 -------------------------------------
