@@ -25,9 +25,27 @@ Each of those subfolders is quickly described below.
 Historical data (historical_data)
 ==================================
 
-.. image:: img/capex_annuity_fOM_historical.png
-.. image:: img/capex_annuity_historical.png
-.. image:: img/existing_capacity_historical.png
-.. image:: img/existing_capacity.png
+.. image:: img/historical_data/capex_annuity_fOM_historical.png
+.. image:: img/historical_data/capex_annuity_historical.png
+.. image:: img/historical_data/existing_capacity_historical.png
+.. image:: img/historical_data/existing_capacity.png
+.. image:: img/historical_data/existing_charging_capacity_historical.png
+.. table::
+   :align: center
+
+   +-----------+----------------------------+
+   |           | storage_annuity_historical |
+   +===========+============================+
+   | phs       | 1.1942                     |
+   +-----------+----------------------------+
+   | hydrogen  | 0.06967                    |
+   +-----------+----------------------------+
 
 ...
+
+
+.. technology_potential:
+
+Technology potential (technology_potential)
+============================================
+.. image:: img/technology_potential/maximum_capacity_evolution.png
