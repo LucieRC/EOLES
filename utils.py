@@ -240,18 +240,18 @@ def calculate_annuities_renovation(linearized_renovation_costs, miscellaneous):
     return renovation_annuities
 
 
-def calculate_annuities_resirf(capex, lifetime, discount_rate):
-    """
+# def calculate_annuities_resirf(capex, lifetime, discount_rate):
+#     """
 
-    :param capex: float
-        Overnight cost of renovation and change of heat vector
-    :param lifetime: int
-        Lifetime of considered investment
-    :param discount_rate: float
-        Discount rate used in the annuity calculus
-    :return:
-    """
-    return capex * discount_rate / (1 - (1 + discount_rate) ** (-lifetime))
+#     :param capex: float
+#         Overnight cost of renovation and change of heat vector
+#     :param lifetime: int
+#         Lifetime of considered investment
+#     :param discount_rate: float
+#         Discount rate used in the annuity calculus
+#     :return:
+#     """
+#     return capex * discount_rate / (1 - (1 + discount_rate) ** (-lifetime))
 
 
 def update_ngas_cost(vOM_init, scc, emission_rate=0.2295):
