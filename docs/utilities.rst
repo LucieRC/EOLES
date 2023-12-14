@@ -71,6 +71,7 @@ The ``load_evolution_data`` function is designed to load essential data required
    - ``heating_gas_demand_RTE_timesteps``: This loads data on the evolution of heating gas demand for tertiary applications, segmented into specific time steps.
    - ``ECS_gas_demand_RTE_timesteps``: Imports data on the evolution of gas demand for Energy Conservation Systems (ECS), also segmented into specific time steps.
 
+All the loaded data are graphed for visualization in :ref:`input_data`.
 The function returns a tuple containing all these datasets, playing a crucial role in providing historical and scenario-based data essential for planning and analyzing social planner trajectories in energy system models.
 
 `process_RTE_demand`
