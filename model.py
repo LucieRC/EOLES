@@ -148,28 +148,29 @@ class ModelEOLES():
                     data_static[df][tec] = scenario_cost[df][tec]
 
         # Define parameters for all the technology data directly on the model
-        self.epsilon = data_static["epsilon"]
-        if existing_capacity is not None:
-            self.existing_capacity = existing_capacity
-        else:  # default value
-            self.existing_capacity = data_static["existing_capacity"]
-        if existing_charging_capacity is not None:
-            self.existing_charging_capacity = existing_charging_capacity
-        else:  # default value
-            self.existing_charging_capacity = data_static["existing_charging_capacity"]
-        if existing_energy_capacity is not None:
-            self.existing_energy_capacity = existing_energy_capacity
-        else:  # default value
-            self.existing_energy_capacity = data_static["existing_energy_capacity"]
-        if maximum_capacity is not None:
-            self.maximum_capacity = maximum_capacity
-        else:
-            self.maximum_capacity = data_static["maximum_capacity"]
-        self.maximum_charging_capacity = data_static["maximum_charging_capacity"]
-        self.maximum_energy_capacity = data_static["maximum_energy_capacity"]
-        self.fix_capacities = data_static["fix_capacities"]
-        self.fix_charging_capacities = data_static["fix_charging_capacities"]
-        self.fix_energy_capacities = data_static["fix_energy_capacities"]
+        self.epsilon = data_static["epsilon"] # needed for only_dispatch as well
+        if not only_dispatch:
+            if existing_capacity is not None:
+                self.existing_capacity = existing_capacity
+            else:  # default value
+                self.existing_capacity = data_static["existing_capacity"]
+            if existing_charging_capacity is not None:
+                self.existing_charging_capacity = existing_charging_capacity
+            else:  # default value
+                self.existing_charging_capacity = data_static["existing_charging_capacity"]
+            if existing_energy_capacity is not None:
+                self.existing_energy_capacity = existing_energy_capacity
+            else:  # default value
+                self.existing_energy_capacity = data_static["existing_energy_capacity"]
+            if maximum_capacity is not None:
+                self.maximum_capacity = maximum_capacity
+            else:
+                self.maximum_capacity = data_static["maximum_capacity"]
+            self.maximum_charging_capacity = data_static["maximum_charging_capacity"]
+            self.maximum_energy_capacity = data_static["maximum_energy_capacity"]
+            self.fix_capacities = data_static["fix_capacities"]
+            self.fix_charging_capacities = data_static["fix_charging_capacities"]
+            self.fix_energy_capacities = data_static["fix_energy_capacities"]
         self.lifetime = data_static["lifetime"]
         self.construction_time = data_static["construction_time"]
         self.capex = data_static["capex"]
@@ -336,18 +337,18 @@ class ModelEOLES():
         self.model.gene = \
             Var(((tec, h) for tec in self.model.tec for h in self.model.h), within=NonNegativeReals, initialize=0)
 
-        # Overall yearly installed capacity in GW
-        self.model.capacity = \
-            Var(self.model.tec, within=NonNegativeReals, bounds=capacity_bounds)
-
         if not only_dispatch:
+            # Overall yearly installed capacity in GW
+            self.model.capacity = \
+                Var(self.model.tec, within=NonNegativeReals, bounds=capacity_bounds)
+
             # Charging power capacity of each storage technology in GW
             self.model.charging_capacity = \
                 Var(self.model.str, within=NonNegativeReals, bounds=charging_capacity_bounds)
 
-        # Energy volume of storage technology in GWh
-        self.model.energy_capacity = \
-            Var(self.model.str, within=NonNegativeReals, bounds=energy_capacity_bounds)
+            # Energy volume of storage technology in GWh
+            self.model.energy_capacity = \
+                Var(self.model.str, within=NonNegativeReals, bounds=energy_capacity_bounds)
 
         # Hourly electricity input of battery storage GWh
         self.model.storage = \
@@ -376,21 +377,33 @@ class ModelEOLES():
     def define_constraints(self):
         def generation_vre_constraint_rule(model, h, vre):
             """Constraint on VRE profiles generation."""
-            return model.gene[vre, h] == model.capacity[vre] * self.load_factors[vre, h]
+            if only_dispatch:
+                model.gene[vre, h] == capacity[vre] * self.load_factors[vre, h]
+            else:
+                return model.gene[vre, h] == model.capacity[vre] * self.load_factors[vre, h]
 
         def generation_nuclear_constraint_rule(model, y):
             """Constraint on total nuclear production which cannot be superior to nuclear capacity times a given
             capacity factor inferior to 1."""
-            return sum(model.gene["nuclear", h] for h in range(8760*y,8760*(y+1)-1)) <= self.capacity_factor_nuclear * model.capacity["nuclear"] * 8760
+            if only_dispatch:
+                sum(model.gene["nuclear", h] for h in range(8760*y,8760*(y+1)-1)) <= self.capacity_factor_nuclear * capacity["nuclear"] * 8760
+            else:
+                return sum(model.gene["nuclear", h] for h in range(8760*y,8760*(y+1)-1)) <= self.capacity_factor_nuclear * model.capacity["nuclear"] * 8760
 
         def generation_nuclear_constraint_hourly_rule(model, h):
             """Constraint on nuclear production which cannot be superior to nuclear capacity times a given capacity factor.
             This holds for all hours."""
-            return model.capacity['nuclear'] * self.capacity_factor_nuclear_hourly >= model.gene['nuclear', h]
+            if only_dispatch:
+                capacity['nuclear'] * self.capacity_factor_nuclear_hourly >= model.gene['nuclear', h]
+            else:
+                return model.capacity['nuclear'] * self.capacity_factor_nuclear_hourly >= model.gene['nuclear', h]
 
         def generation_capacity_constraint_rule(model, h, tec):
             """Constraint on maximum power for non-VRE technologies."""
-            return model.capacity[tec] >= model.gene[tec, h]
+            if only_dispatch:
+                return capacity[tec] >= model.gene[tec, h]
+            else:
+                return model.capacity[tec] >= model.gene[tec, h]
 
         def battery1_capacity_constraint_rule(model):
             """Constraint on capacity of battery 1h."""
@@ -404,10 +417,14 @@ class ModelEOLES():
 
         def frr_capacity_constraint_rule(model, h, frr):
             """Constraint on maximum generation including reserves"""
-            return model.capacity[frr] >= model.gene[frr, h] + model.reserve[frr, h]
+            if only_dispatch:
+                return capacity[frr] >= model.gene[frr, h] + model.reserve[frr, h]
+            else:
+                return model.capacity[frr] >= model.gene[frr, h] + model.reserve[frr, h]         
 
         def storing_constraint_rule(model, h, storage_tecs):
-            """Constraint on energy storage consistency."""
+            """Constraint on energy storage consistency.
+            Compatible with full and only_dispatch."""
             hPOne = h + 1 if h < (self.last_hour - 1) else 0
             charge = model.storage[storage_tecs, h] * self.eta_in[storage_tecs]
             discharge = model.gene[storage_tecs, h] / self.eta_out[storage_tecs]
@@ -415,7 +432,8 @@ class ModelEOLES():
             return model.stored[storage_tecs, hPOne] == model.stored[storage_tecs, h] + flux
 
         def storage_first_last_constraint_rule(model, storage_tecs):
-            """Constraint on stored energy to be equal at the end and at the start."""
+            """Constraint on stored energy to be equal at the end and at the start.
+            Compatible with full and only_dispatch."""
             first = model.stored[storage_tecs, self.first_hour]
             last = model.stored[storage_tecs, self.last_hour - 1]
             charge = model.storage[storage_tecs, self.last_hour - 1] * self.eta_in[storage_tecs]
@@ -425,21 +443,23 @@ class ModelEOLES():
 
         def lake_reserve_constraint_rule(model, month):
             """Constraint on maximum monthly lake generation. Total generation from lake over a month cannot exceed
-            a certain given value."""
+            a certain given value. Compatible with full and only_dispatch."""
             return sum(model.gene['lake', hour] for hour in self.months_hours[month]) <= self.lake_inflows[month] * 1000
 
-        def stored_capacity_constraint_full(model, h, storage_tecs):
+        def stored_capacity_constraint(model, h, storage_tecs):
             """Constraint on maximum energy that is stored in storage units"""
-            return model.stored[storage_tecs, h] <= model.energy_capacity[storage_tecs]
-
-        def stored_capacity_constraint_dispath(model, h, storage_tecs):
-            """In the dispatch version, energy_capacity is a parameterc"""
-            return model.stored[storage_tecs, h] <= energy_capacity[storage_tecs]
+            if only_dispatch:
+                return model.stored[storage_tecs, h] <= energy_capacity[storage_tecs]
+            else:
+                return model.stored[storage_tecs, h] <= model.energy_capacity[storage_tecs]
 
         def storage_charging_capacity_constraint_rule(model, h, storage_tecs):
             """Constraint on the capacity with hourly charging relationship of storage. Energy entering the battery
             during one hour cannot exceed the charging capacity."""
-            return model.storage[storage_tecs, h] <= model.charging_capacity[storage_tecs]
+            if only_dispatch:
+                return model.storage[storage_tecs, h] <= charging_capacity[storage_tecs]
+            else:
+                return model.storage[storage_tecs, h] <= model.charging_capacity[storage_tecs]
 
         def hydrogen_discharge_constraint_rule(model):
             """Constraint on discharge capacity of hydrogen. This is a bit ad hoc, based on discussions with Marie-Alix,
@@ -561,22 +581,15 @@ class ModelEOLES():
             # TODO: vérifier la valeur utilisée pour l'intensité carbone du fioul
             return sum(model.gene["natural_gas", h] for h in range(8760*y,8760*(y+1)-1)) * 0.2295 / 1000 <= self.carbon_budget #+ self.oil_consumption * 0.324 / 1000
 
-
-        self.model.generation_vre_constraint = \
-            Constraint(self.model.h, self.model.vre, rule=generation_vre_constraint_rule)
-
+        
+        self.model.generation_vre_constraint = Constraint(self.model.h, self.model.vre, rule=generation_vre_constraint_rule)
         self.model.generation_nuclear_constraint = Constraint(self.model.years, rule=generation_nuclear_constraint_rule)
-
         self.model.generation_nuclear_hourly_constraint = Constraint(self.model.h, rule=generation_nuclear_constraint_hourly_rule)
-
-        self.model.generation_capacity_constraint = \
-            Constraint(self.model.h, self.model.tec, rule=generation_capacity_constraint_rule)
-
-        self.model.battery_1_capacity_constraint = Constraint(rule=battery1_capacity_constraint_rule)
-
-        self.model.battery_4_capacity_constraint = Constraint(rule=battery4_capacity_constraint_rule)
-
+        self.model.generation_capacity_constraint = Constraint(self.model.h, self.model.tec, rule=generation_capacity_constraint_rule)
         self.model.frr_capacity_constraint = Constraint(self.model.h, self.model.frr, rule=frr_capacity_constraint_rule)
+        if not only_dispatch:
+            self.model.battery_1_capacity_constraint = Constraint(rule=battery1_capacity_constraint_rule)
+            self.model.battery_4_capacity_constraint = Constraint(rule=battery4_capacity_constraint_rule)      
 
         self.model.storing_constraint = Constraint(self.model.h, self.model.str, rule=storing_constraint_rule)
 
