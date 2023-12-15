@@ -93,7 +93,7 @@ PHS Charging Capacity Constraint
 Battery Capacity Equality Constraint
 ------------------------------------
 .. math::
-    charging\_capacity_{battery} = capacity_{battery}
+    charging\_capacity_{battery} = capacity_{battery} \quad \forall battery in BATTERY
 
 Storage Charging and Discharging Capacity Constraint
 ----------------------------------------------------
