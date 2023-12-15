@@ -149,7 +149,7 @@ District Heating Balance Constraint
 Electricity Adequacy Constraint
 --------------------------------
 .. math::
-    \sum_{str} storage_{str, h} + \frac{gene_{electro, h}}{conv\_{\eta}_{electro}} + \frac{gene_{methana, h}}{conv\_{\eta}_{methana}} + \sum_{elec\_balance} gene_{balance, h} \geq elec\_demand_{h} \quad \forall h \in H
+    \sum_{str\_elec} storage_{str\_elec, h} + \frac{gene_{electro, h}}{conv\_{\eta}_{electro}} + \frac{gene_{methana, h}}{conv\_{\eta}_{methana}} + \sum_{elec\_balance} gene_{elec\_balance, h} \geq elec\_demand_{h} \quad \forall h \in H
 
 Nuclear Ramping Up Flexibility Constraint
 -----------------------------------------
