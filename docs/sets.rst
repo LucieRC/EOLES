@@ -10,7 +10,7 @@ Sets
 - **Y**: Range of years.
 - **TEC**: Set of all technologies.
 - **VRE**: Set of variable renewable energy technologies.
-- **THR**: Set of thermal/dispatchable technologies.
+- **THR**: Set of thermal/dispatchable technologies (nuclear, gas-fired, coalfired and oil-fired technologies).
 - **FRR**: Technologies used for upward frequency restoration reserve.
 - **no_FRR**: Technologies NOT used for upward frequency restoration reserve.
 - **elec_balance**: Set of electricity generating technologies.

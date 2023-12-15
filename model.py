@@ -34,6 +34,7 @@ class ModelEOLES():
                 #  hourly_heat_elec, hourly_heat_gas, 
                 #  hourly_heat_district=None,
                 #  wood_consumption=0, oil_consumption=0,
+                 only_dispatch=False,
                  existing_capacity=None, existing_charging_capacity=None, 
                  existing_energy_capacity=None, maximum_capacity=None,
                  method_hourly_profile="valentin", 
@@ -124,7 +125,7 @@ class ModelEOLES():
         data_annual = read_annual_data(self.config, self.anticipated_year)  # get anticipated demand and energy prices
         data_technology.update(data_annual) # inserts data_annual to data_technology
         data_static = data_technology
-        if scenario_cost is not None:  
+        if scenario_cost is not None and not only_dispath:  
             # we update costs based on data given in scenario
             for df in scenario_cost.keys():
                 if df == "existing_capacity" and existing_capacity is not None:
@@ -139,9 +140,12 @@ class ModelEOLES():
                 if df == "maximum_capacity" and maximum_capacity is not None:
                     for tec in scenario_cost[df].keys():
                         maximum_capacity[tec] = scenario_cost[df][tec]
+                
+        # TODO: check if data_static valid for only_dispatch
+        if scenario_cost is not None:
+            for df in scenario_cost.keys():
                 for tec in scenario_cost[df].keys():
                     data_static[df][tec] = scenario_cost[df][tec]
-
 
         # Define parameters for all the technology data directly on the model
         self.epsilon = data_static["epsilon"]
@@ -211,6 +215,14 @@ class ModelEOLES():
         # for i in range(1, self.nb_years):  # we update month_hours to add multiple years
         #     new_month_hours = {key + 12*i: self.months_hours[key] for key in self.months_hours.keys()}
         #     self.months_hours.update(new_month_hours)
+
+
+        # TODO: Check the position of this (from Lucie)
+        if only_dispath:
+            fixed_capacity = pass
+            fixed_charging_capacity = pass
+            fixed_energy_capacity = pass
+
 
 
     def define_sets(self):
@@ -328,9 +340,10 @@ class ModelEOLES():
         self.model.capacity = \
             Var(self.model.tec, within=NonNegativeReals, bounds=capacity_bounds)
 
-        # Charging power capacity of each storage technology in GW
-        self.model.charging_capacity = \
-            Var(self.model.str, within=NonNegativeReals, bounds=charging_capacity_bounds)
+        if not only_dispatch:
+            # Charging power capacity of each storage technology in GW
+            self.model.charging_capacity = \
+                Var(self.model.str, within=NonNegativeReals, bounds=charging_capacity_bounds)
 
         # Energy volume of storage technology in GWh
         self.model.energy_capacity = \
@@ -355,10 +368,8 @@ class ModelEOLES():
         for tec in self.model.tec:
             if tec in self.fix_capacities.keys():
                 self.model.capacity[tec].fix(self.fix_capacities[tec])
-        for tec in self.model.tec:
             if tec in self.fix_charging_capacities.keys():
                 self.model.charging_capacity[tec].fix(self.fix_charging_capacities[tec])
-        for tec in self.model.tec:
             if tec in self.fix_energy_capacities.keys():
                 self.model.energy_capacity[tec].fix(self.fix_energy_capacities[tec])
 
@@ -417,9 +428,13 @@ class ModelEOLES():
             a certain given value."""
             return sum(model.gene['lake', hour] for hour in self.months_hours[month]) <= self.lake_inflows[month] * 1000
 
-        def stored_capacity_constraint(model, h, storage_tecs):
+        def stored_capacity_constraint_full(model, h, storage_tecs):
             """Constraint on maximum energy that is stored in storage units"""
             return model.stored[storage_tecs, h] <= model.energy_capacity[storage_tecs]
+
+        def stored_capacity_constraint_dispath(model, h, storage_tecs):
+            """In the dispatch version, energy_capacity is a parameterc"""
+            return model.stored[storage_tecs, h] <= energy_capacity[storage_tecs]
 
         def storage_charging_capacity_constraint_rule(model, h, storage_tecs):
             """Constraint on the capacity with hourly charging relationship of storage. Energy entering the battery
@@ -512,7 +527,7 @@ class ModelEOLES():
 
         def electricity_adequacy_constraint_rule(model, h):
             """Constraint for supply/demand electricity relation'"""
-            storage = sum(model.storage[str, h] for str in model.str_elec)  # need in electricity storage
+            storage = sum(model.storage[str_tec, h] for str_tec in model.str_elec)  # need in electricity storage
             gene_from_elec = model.gene['electrolysis', h] / self.conversion_efficiency['electrolysis'] + model.gene[
                 'methanation', h] / self.conversion_efficiency[
                                  'methanation']  # technologies using electricity for conversion
@@ -569,8 +584,12 @@ class ModelEOLES():
 
         self.model.lake_reserve_constraint = Constraint(self.model.months, rule=lake_reserve_constraint_rule)
 
-        self.model.stored_capacity_constraint = Constraint(self.model.h, self.model.str,
-                                                           rule=stored_capacity_constraint)
+        if only_dispatch:
+            self.model.stored_capacity_constraint = Constraint(self.model.h, self.model.str,
+                                                           rule=stored_capacity_constraint_dispath)
+        else:
+            self.model.stored_capacity_constraint = Constraint(self.model.h, self.model.str,
+                                                           rule=stored_capacity_constraint_full)
 
         self.model.storage_capacity_1_constraint = \
             Constraint(self.model.h, self.model.str, rule=storage_charging_capacity_constraint_rule)
@@ -623,9 +642,9 @@ class ModelEOLES():
                 (model.capacity[tec] - self.existing_capacity[tec]) * self.annuities[tec] for tec in
                 model.tec)
                     + sum(
-                        (model.energy_capacity[storage_tecs] - self.existing_energy_capacity[storage_tecs]) *
+                        (model.energy_capacity[str_tec] - self.existing_energy_capacity[str_tec]) *
                         self.storage_annuities[
-                            storage_tecs] for storage_tecs in model.str)
+                            str_tec] for str_tec in model.str)
                     + sum(model.capacity[tec] * self.fOM[tec] for tec in model.tec)
                     + sum(sum(model.gene[tec, h] * self.vOM[tec] for h in model.h) for tec in model.tec) / self.nb_years
                     + sum(model.gene["central_wood_boiler", h] for h in model.h) * self.vOM["wood"] / self.nb_years  # we add variable costs from wood and fuel
@@ -638,7 +657,8 @@ class ModelEOLES():
         self.define_sets()
         self.define_other_demand()
         self.define_variables()
-        self.fix_values()
+        if not only_dispatch:
+            self.fix_values()
         self.define_constraints()
         self.define_objective()
 
@@ -692,9 +712,10 @@ class ModelEOLES():
         self.peak_heat_load_info = extract_peak_heat_load(self.hourly_generation, self.input_years)
         self.spot_price = extract_spot_price(self.model, self.last_hour)
         self.carbon_value = extract_carbon_value(self.model, self.carbon_constraint, self.anticipated_scc)
-        self.capacities = extract_capacities(self.model)
-        self.energy_capacity = extract_energy_capacity(self.model)
-        self.charging_capacity = extract_charging_capacity(self.model)
+        if not only_dispath:
+            self.capacities = extract_capacities(self.model)
+            self.energy_capacity = extract_energy_capacity(self.model)
+            self.charging_capacity = extract_charging_capacity(self.model)
         self.electricity_generation = extract_supply_elec(self.model, self.nb_years)
         self.primary_generation = extract_primary_gene(self.model, self.nb_years)
         self.CH4_to_power_generation = extract_CH4_to_power(self.model, self.conversion_efficiency, self.nb_years)
