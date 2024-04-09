@@ -24,7 +24,7 @@ project = 'EOLES'
 author = 'Lucie Ricq'
 
 # The full version, including alpha/beta/rc tags
-release = '2023'
+release = '2024'
 
 language = "en"
 
