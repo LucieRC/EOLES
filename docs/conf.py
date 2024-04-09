@@ -20,7 +20,7 @@
 master_doc = "index"
 
 project = 'EOLES'
-copyright = '2019-2023, Behrang Shirizadeh, Quentin Perrier, Philippe Quirion, Clément Leblanc, Célia Escribe, Laure Baratgin'
+# copyright = '2019-2023, Behrang Shirizadeh, Quentin Perrier, Philippe Quirion, Clément Leblanc, Célia Escribe, Laure Baratgin'
 author = 'Lucie Ricq'
 
 # The full version, including alpha/beta/rc tags
